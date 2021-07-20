@@ -2,31 +2,27 @@ from operator import index
 from flask import Flask, request, jsonify, json
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+from sqlalchemy_serializer import SerializerMixin
 
 app = Flask(__name__)
 api = Api(app)
 
 #This is telling our app where the DB is located
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///items.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///items1.db'
 
 #Initialize the DB
 db = SQLAlchemy(app)
-ma = Marshmallow(app)
 
-class Item(db.Model):
+class Item(db.Model, SerializerMixin):
     item_id = db.Column(db.Integer, primary_key=True, index= True)
     name = db.Column(db.String)
     cost = db.Column(db.Numeric(10,2))
     available_quantity = db.Column(db.Integer)
 
-class ItemSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Item
-
-
-class AddItem(Resource):   ## WORKS WELL
+# Create Item
+class AddItem(Resource):
     def post(self):
+        
         # request.get_json()  converts the JSON object into Python data
         # Let’s assign the incoming request data to variables and return them
         item_data = request.get_json()
@@ -35,9 +31,7 @@ class AddItem(Resource):   ## WORKS WELL
         item_quantity = item_data['available_quantity']
 
         new_item = Item(name=item_name,cost=item_cost,available_quantity=item_quantity)
-        
-        #item_data['item_id'] = new_item.item_id
-        
+       
         try:
             db.session.add(new_item)
             db.session.commit()
@@ -45,10 +39,11 @@ class AddItem(Resource):   ## WORKS WELL
         except:
             return {'message' :'There was an issue adding your task!'}
         
-        
+# Method ['GET'] - Read  Item
+# Method ['PUT'] - Update Item
 class ReadUpdateItem(Resource):
-    def post(self, id):
-        item_to_update = Item.query.filter_by(item_id=id).first()
+    def put(self, id):
+        item_to_update = Item.query.get(id)
         updated_item = request.get_json()
 
         if item_to_update is not None:
@@ -61,44 +56,47 @@ class ReadUpdateItem(Resource):
             if 'available_quantity' in updated_item:
                 item_to_update.available_quantity = updated_item['available_quantity']
 
-        try:
-            db.session.add(item_to_update)
-            db.session.commit()
-            return jsonify({'message' : 'Item updated successfully', 'data' : updated_item})
-        except:
-            return jsonify({'message' : 'There was an issue updating that item!'})
+            try:
+                db.session.commit()
+                return {'Item Updated' : updated_item}, 201
+            except:
+                return {'message' : 'There was an issue updating that item!'}
+        else:
+             return {'message' : 'Item id does not exist to be updated!'}, 404
 
     def get(self, id):
-        item = Item.query.filter_by(item_id=id).first()
+        item = Item.query.get(id)
        
         if item is None:
-            return jsonify({"message" : "This item-id does not exist", "item-id": id })
+            return {"message" : "This item-id does not exist" }, 404
         
         else:
-            item_schema = ItemSchema()
-            output = item_schema.dumps(item)
+            output = item.to_dict()
             
             try:
-                return jsonify({'item': output})
+                return {'item': output}, 201
             except:
-                return jsonify({'message': 'There was an error fetching your item'})
+                return {'message': 'There was an error fetching your item'}
 
-
+# Delete Item
 class DeleteItem(Resource):
     def post(self, id):
-        item_to_delete = Item.query.get_or_404(id)
+        item_to_delete = Item.query.filter_by(item_id=id).first()
 
+        if item_to_delete is None:
+          return {"message" : "This item-id does not exist"}, 404
+        
         try:
             db.session.delete(item_to_delete)
             db.session.commit()
-            return jsonify({'message' : 'Item deleted successfully'})
+            return {'message' : 'Item deleted successfully'} , 201
         except:
-           return jsonify({'message' : 'There was a problem deleting that task'})
+           return {'message' : 'There was a problem deleting that task'}
 
 
-api.add_resource(AddItem, '/')
-api.add_resource(ReadUpdateItem, '/readupdateitem/<int:id>')
-api.add_resource(DeleteItem, '/deleteItem/<int:id>')
+api.add_resource(AddItem, '/item')
+api.add_resource(ReadUpdateItem, '/get_item/<int:id>', '/update_item/<int:id>')
+api.add_resource(DeleteItem, '/delete_item/<int:id>')
 
 
 
