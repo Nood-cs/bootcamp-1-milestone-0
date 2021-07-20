@@ -25,78 +25,83 @@ class AddItem(Resource):
         
         # request.get_json()  converts the JSON object into Python data
         # Let’s assign the incoming request data to variables and return them
-        item_data = request.get_json()
-        item_name = item_data['name']
-        item_cost = item_data['cost']
-        item_quantity = item_data['available_quantity']
+        body = request.get_json()
+        item_name = body['name']
+        item_cost = body['cost']
+        item_quantity = body['available_quantity']
 
         new_item = Item(name=item_name,cost=item_cost,available_quantity=item_quantity)
        
         try:
             db.session.add(new_item)
             db.session.commit()
-            return {'message' : 'Item added successfully', 'data': item_data} ,201
+            
+            return {'message' : 'Item added successfully', 'data': body} ,201
+        
         except:
-            return {'message' :'There was an issue adding your task!'}
+            return {'message' :'There was an issue adding your task!'}, 422
         
 # Method ['GET'] - Read  Item
 # Method ['PUT'] - Update Item
 class ReadUpdateItem(Resource):
     def put(self, id):
-        item_to_update = Item.query.get(id)
-        updated_item = request.get_json()
+        body = request.get_json()
+       
+        try:
+            item_to_update = Item.query.get(id)
 
-        if item_to_update is not None:
-            if 'name' in updated_item:
-                item_to_update.name = updated_item['name']
+            if item_to_update is None:
+                return {'message' : 'Item id does not exist to be updated!'}, 404
+           
+            if 'name' in body:
+                item_to_update.name = body['name']
 
-            if 'cost' in updated_item:
-                item_to_update.cost = updated_item['cost']
+            if 'cost' in body:
+                item_to_update.cost = body['cost']
 
-            if 'available_quantity' in updated_item:
-                item_to_update.available_quantity = updated_item['available_quantity']
+            if 'available_quantity' in body:
+                item_to_update.available_quantity = body['available_quantity']
 
-            try:
-                db.session.commit()
-                return {'Item Updated' : updated_item}, 201
-            except:
-                return {'message' : 'There was an issue updating that item!'}
-        else:
-             return {'message' : 'Item id does not exist to be updated!'}, 404
+            db.session.commit()
+            return {'Item Updated' : body}, 201
+        
+        except:
+            return {'message' : 'There was an issue updating that item!'}, 422
 
     def get(self, id):
-        item = Item.query.get(id)
-       
-        if item is None:
-            return {"message" : "This item-id does not exist" }, 404
+        try:
+            item = Item.query.get(id)
+            if item is None:
+                return {"message" : "This item-id does not exist" }, 404
         
-        else:
             output = item.to_dict()
             
-            try:
-                return {'item': output}, 201
-            except:
-                return {'message': 'There was an error fetching your item'}
+            return {'item': output}, 201
+        
+        except:
+            return {'message': 'There was an error fetching your item'}, 422
 
 # Delete Item
 class DeleteItem(Resource):
-    def post(self, id):
-        item_to_delete = Item.query.filter_by(item_id=id).first()
-
-        if item_to_delete is None:
-          return {"message" : "This item-id does not exist"}, 404
-        
+    def delete(self, id):
         try:
+            item_to_delete = Item.query.get(id)
+
+            if item_to_delete is None:
+                return {"message" : "This item-id does not exist"}, 404
+        
             db.session.delete(item_to_delete)
             db.session.commit()
+            
             return {'message' : 'Item deleted successfully'} , 201
+       
         except:
-           return {'message' : 'There was a problem deleting that task'}
+           return {'message' : 'There was a problem deleting that task'}, 422
 
 
 api.add_resource(AddItem, '/item')
-api.add_resource(ReadUpdateItem, '/get_item/<int:id>', '/update_item/<int:id>')
-api.add_resource(DeleteItem, '/delete_item/<int:id>')
+api.add_resource(ReadUpdateItem, '/items/<int:id>')
+api.add_resource(DeleteItem, '/items/<int:id>')
 
 
 
