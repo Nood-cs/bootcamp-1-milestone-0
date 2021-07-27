@@ -27,6 +27,11 @@ Evolution Stage 0.1 - Build a simple RESTful CRUD API for a merchant application
    venv\Scripts\activate
    ```
   
-  4. Install dependencies with pip: `pip install -r requirements.txt`
-  
-  5. Run the app: `python app.py`
+  4. Install dependencies with pip: 
+  ```
+  pip install -r requirements.txt
+  ```
+  5. Run the app: 
+  ```
+  python app.py
+  ```
