@@ -10,7 +10,6 @@ Stage 0.1 - Build a simple RESTful CRUD API for a merchant application to manage
   2. Clone this repo: 
   ```
   git clone https://github.com/Nood-cs/bootcamp-1-milestone-0.git
-  cd bootcamp-1-milestone-0
   ```
   3. Create virtualenv and activate it: 
   ``` 
