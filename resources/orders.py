@@ -2,7 +2,7 @@ from flask import request, abort
 from flask_restful import Resource
 from models import db
 from models.models import Item, Order
-
+from .items import isExist_item
 
 # Create Order
 class CreateOrder(Resource):
@@ -37,10 +37,11 @@ class ReadOrder(Resource):
     def get(self, id):
         try:
             order = Order.query.get(id)
+            #isExist_order(order)
             
             if order is None:
-                return {"message" : "Order is not found" }, 404
-        
+               return {'message': 'order is not found'}, 404
+
             output = order.to_dict()
             
             return {'order': output}, 201
@@ -55,9 +56,11 @@ class UpdateOrder(Resource):
         try:
             order_to_update = Order.query.get(id)
             
+            #isExist_order(order_to_update)
+            
             if order_to_update is None:
-                return {'message' : 'Order is not found'}, 404
-           
+               return {'message': 'order is not found'}, 404
+
             if 'shopping_cart_id' in body:
                 order_to_update.shopping_cart_id = body['shopping_cart_id']
 
@@ -92,8 +95,10 @@ class DeleteOrder(Resource):
     def delete(self, id):
         try:
             order_to_delete = Order.query.get(id)
+            #isExist_order(order_to_delete)
+            
             if order_to_delete is None:
-                return {"message" : "Order is not found"}, 404
+               return {'message': 'order is not found'}, 404
 
             item = Item.query.get(order_to_delete.item_id)
 
@@ -107,10 +112,12 @@ class DeleteOrder(Resource):
         except:
             return {'message' : 'There was a problem deleting that order'}, 422
 
+def isExist_order(ordr: Order):
+    if ordr is None:
+        abort(404, 'order is not found')
 
 def isavailable_qty(item: Item, rqstdqty: int):
-    if item is None:
-        abort(404, 'item is not found')
+    isExist_item(item)
     if item.available_quantity < rqstdqty:
         abort(422, 'No available quantity')
 

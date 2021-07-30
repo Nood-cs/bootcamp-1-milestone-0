@@ -1,16 +1,32 @@
 from flask import Flask
 from flask_restful import Api
 from resources.routes import initialize_routes
-from models import initialize_db
+from models import db
 
-app = Flask(__name__)
-api = Api(app)
+def create_app(db_location):
+    """
+    Function that creates our Flask application.
+    This function creates the Flask app, Flask-Restful API,
+    and Flask-SQLAlchemy connection
+    :param db_location: Connection string to the database
+    :return: Initialized Flask app
+    """
 
-#This is telling our app where the DB is located
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///merchant.db'
+    app = Flask(__name__)
+    api = Api(app)
+    
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///merchant.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_location
 
-initialize_db(app)
-initialize_routes(api)
+    db.init_app(app)
+    
+    with app.app_context():
+        db.create_all()
+
+    initialize_routes(api)
+
+    return app
 
 if __name__== '__main__':
-    app.run(debug=True)
+    app = create_app('sqlite:///merchant.db')
+    app.run(debug=False)
