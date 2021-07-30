@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, abort
 from flask_restful import Resource
 from models import db
 from models.models import Item
@@ -7,8 +7,6 @@ from models.models import Item
 class AddItem(Resource):
     def post(self):
         
-        # request.get_json()  converts the JSON object into Python data
-        # Let’s assign the incoming request data to variables and return them
         body = request.get_json()
         item_name = body['name']
         item_cost = body['cost']
@@ -30,9 +28,11 @@ class ReadItem(Resource):
     def get(self, id):
         try:
             item = Item.query.get(id)
+            
+            #isExist_item(item)
             if item is None:
-                return {"message" : "This item-id does not exist" }, 404
-        
+                return {'message' : 'Item not found'}, 404
+
             output = item.to_dict()
             
             return {'item': output}, 201
@@ -48,9 +48,10 @@ class UpdateItem(Resource):
         try:
             item_to_update = Item.query.get(id)
 
+            # isExist_item(item_to_update)
             if item_to_update is None:
-                return {'message' : 'Item id does not exist to be updated!'}, 404
-           
+                return {'message' : 'Item not found'}, 404
+
             if 'name' in body:
                 item_to_update.name = body['name']
 
@@ -72,9 +73,10 @@ class DeleteItem(Resource):
         try:
             item_to_delete = Item.query.get(id)
 
+            #isExist_item(item_to_delete)
             if item_to_delete is None:
-                return {"message" : "This item-id does not exist"}, 404
-        
+                return {'message' : 'Item not found'}, 404
+
             db.session.delete(item_to_delete)
             db.session.commit()
             
@@ -82,3 +84,7 @@ class DeleteItem(Resource):
        
         except:
            return {'message' : 'There was a problem deleting that task'}, 422
+
+def isExist_item(item: Item):
+    if item is None:
+        abort(404, 'item not found')

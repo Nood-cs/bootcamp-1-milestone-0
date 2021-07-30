@@ -1,16 +1,25 @@
 from flask import Flask
 from flask_restful import Api
 from resources.routes import initialize_routes
-from models import initialize_db
+from models import db
 
-app = Flask(__name__)
-api = Api(app)
+def create_app(db_location):
+    
+    app = Flask(__name__)
+    api = Api(app)
+    
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///merchant.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_location
 
-#This is telling our app where the DB is located
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///merchant.db'
+    db.init_app(app)
+    
+    with app.app_context():
+        db.create_all()
 
-initialize_db(app)
-initialize_routes(api)
+    initialize_routes(api)
+
+    return app
 
 if __name__== '__main__':
-    app.run(debug=True)
+    app = create_app('sqlite:///merchant.db')
+    app.run(debug=False)
