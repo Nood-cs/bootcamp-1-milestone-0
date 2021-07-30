@@ -12,7 +12,7 @@ Evolution Stage 0.1 - Build a simple RESTful CRUD API for a merchant application
   git clone https://github.com/Nood-cs/bootcamp-1-milestone-0.git
   cd bootcamp-1-milestone-0
   ```
-  3. Create and activate virtualenv: 
+  3. Create virtualenv and activate it: 
   ``` 
   python -m venv venv
   
@@ -34,4 +34,8 @@ Evolution Stage 0.1 - Build a simple RESTful CRUD API for a merchant application
   5. Run the app: 
   ```
   python app.py
+  ```
+  6. Run tests: 
+  ```
+  pytest -v
   ```
