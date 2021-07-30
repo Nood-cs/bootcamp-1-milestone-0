@@ -4,14 +4,7 @@ from resources.routes import initialize_routes
 from models import db
 
 def create_app(db_location):
-    """
-    Function that creates our Flask application.
-    This function creates the Flask app, Flask-Restful API,
-    and Flask-SQLAlchemy connection
-    :param db_location: Connection string to the database
-    :return: Initialized Flask app
-    """
-
+    
     app = Flask(__name__)
     api = Api(app)
     
