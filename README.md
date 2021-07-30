@@ -2,7 +2,7 @@
 
 This project is based on [Devops "Charmander-to-Charmeleon" bootcamp](https://www.devopzilla.com/events/devops-bootcamp-2021-1/)
 
-Evolution Stage 0.1 - Build a simple RESTful CRUD API for a merchant application to manage 2 resources; items and orders.
+Stage 0.1 - Build a simple RESTful CRUD API for a merchant application to manage 2 resources; items and orders.
 
 ### Getting Started
 
