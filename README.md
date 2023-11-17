@@ -1,6 +1,6 @@
 # bootcamp-1-milestone-0
 
-This project is based on [Devops "Charmander-to-Charmeleon" bootcamp](https://www.devopzilla.com/events/devops-bootcamp-2021-1/)
+This project is based on [Devops "Charmander-to-Charmeleon" bootcamp](https://devopzilla.notion.site/DevOps-Charmander-to-Charmeleon-boot-camp-2021-c4a3db54884044f1baee4fa586cdcce8)
 
 Stage 0.1 - Build a simple RESTful CRUD API for a merchant application to manage 2 resources; items and orders.
 
@@ -30,9 +30,6 @@ Stage 0.1 - Build a simple RESTful CRUD API for a merchant application to manage
   Set-ExecutionPolicy Unrestricted -scope Process
   ```
    *Then try to activate the venv one more time* 
-   ```
-   venv\Scripts\activate
-   ```
   
   4. Install dependencies with pip: 
   ```
