@@ -12,3 +12,5 @@ __pycache__/app.cpython-39.pyc
 __pycache__/app.cpython-39.pyc
 *.pyc
 __pycache__/app.cpython-39.pyc
+venv/
+merchant.db
