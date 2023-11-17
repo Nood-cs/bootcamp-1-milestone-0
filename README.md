@@ -16,8 +16,14 @@ Stage 0.1 - Build a simple RESTful CRUD API for a merchant application to manage
   3. Create virtualenv and activate it: 
   ``` 
   python -m venv venv
-  
+  ```
+  Activate on Windows
+  ```
   venv\Scripts\activate
+  ```
+  Activate on macOS/Linux
+  ```
+  source venv/bin/activate
   ```
    *In case you are using VSCode, you might need to change the ExecutionPolicy to Unrestricted, so that you can run the script Activate.ps1*
   ```
